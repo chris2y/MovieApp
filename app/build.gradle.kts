@@ -69,6 +69,7 @@ dependencies {
 
     //coroutine
     implementation (libs.kotlinx.coroutines.android)
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     //compose navigation
     implementation (libs.androidx.navigation.compose)
@@ -87,6 +88,18 @@ dependencies {
     implementation (libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    //gson
+    implementation ("com.google.code.gson:gson:2.10.1")
+    //coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+    //retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+
 
     //implementation(libs.androidx.material)
     //implementation ("androidx.compose.ui:ui:1.7.5")

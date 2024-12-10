@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 
 import androidx.compose.runtime.remember
@@ -30,9 +31,8 @@ import com.example.movieapp.ui.theme.navigation.Screens
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar() {
-    Log.d("BottomNav", "1")
     var navigationSelectedItem by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     val navController = rememberNavController()
