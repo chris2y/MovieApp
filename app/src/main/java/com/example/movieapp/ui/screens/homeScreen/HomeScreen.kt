@@ -1,9 +1,6 @@
 package com.example.movieapp.ui.screens.homeScreen
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -38,30 +35,16 @@ import androidx.compose.ui.tooling.preview.Preview
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
@@ -214,122 +197,44 @@ fun MovieItem(movie: Movie) {
         }
     }
 }
-
 @Composable
-fun SingleImageCarousel(
-    images: List<Movie>,
-    onImageChange: (Movie) -> Unit = {}
-) {
-    var currentImageIndex by remember { mutableIntStateOf(0) }
-    var imageOffset by remember { mutableFloatStateOf(0f) }
-    val density = LocalDensity.current
+fun SingleImageCarousel(images: List<Movie>) {
+
+    // Use this to enable programmatic scrolling
+    val listState = rememberLazyListState()
+
+
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures(
-                    onHorizontalDrag = { change, dragAmount ->
-                        // Calculate drag offset
-                        imageOffset += dragAmount
-                    },
-                    onDragEnd = {
-                        // Determine if we should switch images based on drag distance
-                        val dragThreshold = 100.dp.toPx()
-
-                        when {
-                            imageOffset < -dragThreshold && currentImageIndex < images.size - 1 -> {
-                                // Swipe left - next image
-                                currentImageIndex++
-                                onImageChange(images[currentImageIndex])
-                            }
-                            imageOffset > dragThreshold && currentImageIndex > 0 -> {
-                                // Swipe right - previous image
-                                currentImageIndex--
-                                onImageChange(images[currentImageIndex])
-                            }
-                        }
-
-                        // Reset offset
-                        imageOffset = 0f
-                    }
-                )
-            }
+        modifier = Modifier.fillMaxWidth()
+            .height(300.dp)
     ) {
-        // Background image (previous image if exists)
-        if (currentImageIndex > 0) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(Constants.IMAGE_BASE_URL + images[currentImageIndex - 1].posterPath)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Previous Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.3f)
-                    .blur(10.dp)
-            )
-        }
-
-        // Main image with drag and transition effects
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .offset {
-                    IntOffset(
-                        x = imageOffset.roundToInt(),
-                        y = 0
-                    )
-                }
-                .graphicsLayer {
-                    // Add slight scaling and rotation based on drag
-                    val scale = 1f - abs(imageOffset) / 1000f
-                    scaleX = scale
-                    scaleY = scale
-                    rotationZ = imageOffset / 1000f
-                }
+        // Lazy Row with single item visibility
+        LazyRow(
+            state = listState,
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(Constants.IMAGE_BASE_URL + images[currentImageIndex].posterPath)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = images[currentImageIndex].title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        // Progress Indicator
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                images.forEachIndexed { index, _ ->
-                    Box(
-                        modifier = Modifier
-                            .height(4.dp)
-                            .weight(1f)
-                            .background(
-                                color = when {
-                                    index < currentImageIndex -> MaterialTheme.colorScheme.primary
-                                    index == currentImageIndex -> MaterialTheme.colorScheme.primary
-                                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                                },
-                                shape = RoundedCornerShape(2.dp)
-                            )
+            // Use count-based items method
+            items(count = images.size) { index ->
+                val movie = images[index]
+                // Full-width card for each image
+                Card(
+                    modifier = Modifier
+                        .fillParentMaxWidth() // Makes each item take full width
+                        .padding(horizontal = 8.dp)
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(Constants.IMAGE_BASE_URL + movie.posterPath)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = movie.title,
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
         }
+
     }
 }
 
