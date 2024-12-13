@@ -19,9 +19,25 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
     val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
 
+    private val _trendingMoviesState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
+    val trendingMoviesState: StateFlow<MovieUiState> = _trendingMoviesState.asStateFlow()
+
     init {
         fetchPopularMovies()
+        fetchTrendingMovies() // Fetch trending movies on initialization
     }
+
+    private fun fetchTrendingMovies() {
+        viewModelScope.launch {
+            try {
+                val movies = movieRepository.getTrendingMovies()
+                _trendingMoviesState.value = MovieUiState.Success(movies.take(5)) // Limit to 5 movies
+            } catch (e: Exception) {
+                _trendingMoviesState.value = MovieUiState.Error("Failed to fetch trending movies: ${e.message}")
+            }
+        }
+    }
+
 
     private fun fetchPopularMovies() {
         viewModelScope.launch {

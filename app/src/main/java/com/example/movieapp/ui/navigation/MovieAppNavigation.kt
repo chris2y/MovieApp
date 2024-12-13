@@ -1,4 +1,4 @@
-package com.example.movieapp.ui.theme.navigation
+package com.example.movieapp.ui.navigation
 
 class MovieAppNavigation {
 }

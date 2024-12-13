@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.movieapp.ui.theme.navigation.Screens
 
 data class BottomNavigationItem(
     val label : String = "",

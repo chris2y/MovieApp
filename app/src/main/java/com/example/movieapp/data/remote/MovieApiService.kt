@@ -10,4 +10,10 @@ interface MovieApiService {
         @Query("api_key") apiKey: String,
         @Query("page") page: Int = 1
     ): MovieResponse
+
+    @GET("trending/movie/day")
+    suspend fun getTrendingMovies(
+        @Query("api_key") apiKey: String
+    ): MovieResponse
+
 }

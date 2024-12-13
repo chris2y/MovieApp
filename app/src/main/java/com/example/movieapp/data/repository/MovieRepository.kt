@@ -13,4 +13,9 @@ class MovieRepository @Inject constructor(
     suspend fun getPopularMovies(): List<Movie> {
         return movieApiService.getPopularMovies(Constants.API_KEY).results
     }
+
+    suspend fun getTrendingMovies(): List<Movie> {
+        return movieApiService.getTrendingMovies(Constants.API_KEY).results
+    }
+
 }
