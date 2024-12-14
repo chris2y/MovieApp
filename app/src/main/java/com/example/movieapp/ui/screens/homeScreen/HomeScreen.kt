@@ -13,14 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,45 +39,14 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             }
         }
         is MovieUiState.Success -> {
-            // Create a custom nested scroll connection
-            val nestedScrollConnection = object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    return Offset.Zero
-                }
-
-                override fun onPostScroll(
-                    consumed: Offset,
-                    available: Offset,
-                    source: NestedScrollSource
-                ): Offset {
-                    return Offset.Zero
-                }
-
-                override suspend fun onPreFling(available: Velocity): Velocity {
-                    return Velocity.Zero
-                }
-
-                override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                    return Velocity.Zero
-                }
-            }
-
-            // Use nestedScroll modifier for full scrolling capability
-            Box(
+            // Use a scrollable column to enable nested scrolling
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .nestedScroll(nestedScrollConnection)
+                    .verticalScroll(rememberScrollState())
             ) {
-                // Main scrollable content
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    SingleImageCarousel(state.trending)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    MovieGrid(state.popular)
-                }
+                SingleImageCarousel(state.trending)
+                MovieGrid(state.popular)
             }
         }
         is MovieUiState.Error -> {
@@ -106,7 +70,8 @@ fun MovieGrid(movies: List<Movie>) {
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.heightIn(min = 300.dp, max = 600.dp)
+        // Added a fixed height or use a fraction of the parent
+        modifier = Modifier.heightIn(max = 600.dp)
     ) {
         items(movies) { movie ->
             MovieItem(movie)
