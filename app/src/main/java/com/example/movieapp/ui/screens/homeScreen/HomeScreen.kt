@@ -1,6 +1,8 @@
 package com.example.movieapp.ui.screens.homeScreen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -39,15 +41,10 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             }
         }
         is MovieUiState.Success -> {
-            // Use a scrollable column to enable nested scrolling
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                SingleImageCarousel(state.trending)
-                MovieGrid(state.popular)
-            }
+            HomeContent(
+                trendingMovies = state.trending,
+                popularMovies = state.popular
+            )
         }
         is MovieUiState.Error -> {
             Box(
@@ -64,17 +61,68 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun MovieGrid(movies: List<Movie>) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        // Added a fixed height or use a fraction of the parent
-        modifier = Modifier.heightIn(max = 600.dp)
+fun HomeContent(
+    trendingMovies: List<Movie>,
+    popularMovies: List<Movie>
+) {
+    val listState = rememberLazyListState()
+
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(movies) { movie ->
-            MovieItem(movie)
+        // Trending Movies Carousel
+        item {
+            SingleImageCarousel(trendingMovies)
+        }
+
+        // Popular Movies Grid
+        // Use 'this' to explicitly reference the LazyListScope
+        this.MovieGrid(popularMovies)
+    }
+}
+
+// LazyListScope extension function remains the same as in the previous example
+fun LazyListScope.MovieGrid(movies: List<Movie>) {
+    items(count = movies.size) { index ->
+        val movie = movies[index]
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(0.6f)
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(Constants.IMAGE_BASE_URL + movie.posterPath)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = movie.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+
+                Text(
+                    text = movie.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(1.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = "Rating: ${String.format("%.1f", movie.rating)}/10",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(1.dp)
+                )
+            }
         }
     }
 }
