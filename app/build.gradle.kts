@@ -100,6 +100,8 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
+    implementation ("androidx.compose.material3:material3:1.3.1")
+
 
 
     //implementation(libs.androidx.material)
