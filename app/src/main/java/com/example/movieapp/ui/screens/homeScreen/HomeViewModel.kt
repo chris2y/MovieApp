@@ -15,37 +15,25 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
-    val uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
-
-    private val _trendingMoviesState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
-    val trendingMoviesState: StateFlow<MovieUiState> = _trendingMoviesState.asStateFlow()
+    private val _homeScreenState = MutableStateFlow<MovieUiState>(MovieUiState.Loading)
+    val homeScreenState: StateFlow<MovieUiState> = _homeScreenState.asStateFlow()
 
     init {
-        fetchPopularMovies()
-        fetchTrendingMovies() // Fetch trending movies on initialization
+        fetchAllMovies()
     }
 
-    private fun fetchTrendingMovies() {
+    private fun fetchAllMovies() {
         viewModelScope.launch {
+            _homeScreenState.value = MovieUiState.Loading
             try {
-                val movies = movieRepository.getTrendingMovies()
-                _trendingMoviesState.value = MovieUiState.Success(movies.take(5)) // Limit to 5 movies
+                val trendingMovies = movieRepository.getTrendingMovies()
+                val popularMovies = movieRepository.getPopularMovies()
+                _homeScreenState.value = MovieUiState.Success(
+                    trending = trendingMovies.take(5),
+                    popular = popularMovies
+                )
             } catch (e: Exception) {
-                _trendingMoviesState.value = MovieUiState.Error("Failed to fetch trending movies: ${e.message}")
-            }
-        }
-    }
-
-
-    private fun fetchPopularMovies() {
-        viewModelScope.launch {
-            try {
-                val movies = movieRepository.getPopularMovies()
-                _uiState.value = MovieUiState.Success(movies)
-            } catch (e: Exception) {
-                _uiState.value = MovieUiState.Error("Failed to fetch movies: ${e.message}")
+                _homeScreenState.value = MovieUiState.Error("Failed to fetch movies: ${e.message}")
             }
         }
     }
