@@ -29,7 +29,7 @@ class HomeViewModel @Inject constructor(
                 val trendingMovies = movieRepository.getTrendingMovies()
                 val popularMovies = movieRepository.getPopularMovies()
                 _homeScreenState.value = MovieUiState.Success(
-                    trending = trendingMovies.take(5),
+                    trending = trendingMovies.take(8),
                     popular = popularMovies
                 )
             } catch (e: Exception) {

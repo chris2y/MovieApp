@@ -18,4 +18,8 @@ class MovieRepository @Inject constructor(
         return movieApiService.getTrendingMovies(Constants.API_KEY).results
     }
 
+
+
+    //suspend fun getMovieDetails(movieId: Int): Movie
+
 }

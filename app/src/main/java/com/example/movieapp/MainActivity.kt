@@ -1,11 +1,9 @@
 package com.example.movieapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.movieapp.ui.components.BottomNavigationBar
 import com.example.movieapp.ui.theme.MovieAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,8 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MovieAppTheme {
-                Log.d("BottomNav", "Initialized")
-                BottomNavigationBar()
+                MovieApp()
             }
         }
     }
