@@ -10,12 +10,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.movieapp.ui.components.BottomNavigationBar
 import com.example.movieapp.ui.navigation.Screens
+import com.example.movieapp.ui.screens.detailScreen.DetailScreen
 import com.example.movieapp.ui.screens.homeScreen.HomeScreen
 import com.example.movieapp.ui.screens.popularScreen.PopularScreen
 
@@ -26,7 +30,7 @@ fun MovieApp() {
     var selectedItem by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomNavigationBar(
                 navController = navController,
@@ -38,14 +42,25 @@ fun MovieApp() {
         NavHost(
             navController = navController,
             startDestination = Screens.Home.route,
-            modifier = androidx.compose.ui.Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screens.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    navController = navController
+                )
             }
             composable(Screens.Popular.route) {
                 PopularScreen()
             }
+
+            composable(
+                "detail_screen/{movieId}",
+                arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val movieId = backStackEntry.arguments?.getInt("movieId")
+                DetailScreen(movieId, navController)
+            }
+
         }
     }
 }

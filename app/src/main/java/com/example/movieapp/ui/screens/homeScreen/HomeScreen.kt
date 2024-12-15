@@ -1,6 +1,7 @@
 package com.example.movieapp.ui.screens.homeScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movieapp.data.model.Movie
@@ -29,7 +31,7 @@ import com.example.movieapp.ui.state.MovieUiState
 import com.example.movieapp.utils.Constants
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavController) {
     val homeScreenState by viewModel.homeScreenState.collectAsStateWithLifecycle()
 
     when (val state = homeScreenState) {
@@ -44,7 +46,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         is MovieUiState.Success -> {
             HomeContent(
                 trendingMovies = state.trending,
-                popularMovies = state.popular
+                popularMovies = state.popular,
+                navController = navController
             )
         }
         is MovieUiState.Error -> {
@@ -64,7 +67,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 @Composable
 fun HomeContent(
     trendingMovies: List<Movie>,
-    popularMovies: List<Movie>
+    popularMovies: List<Movie>,
+    navController: NavController
 ) {
     val listState = rememberLazyListState()
 
@@ -83,7 +87,7 @@ fun HomeContent(
         }
         // Trending Movies Carousel
         item {
-            SingleImageCarousel(trendingMovies)
+            SingleImageCarousel(trendingMovies,navController)
         }
         item {
             Text(
@@ -96,11 +100,11 @@ fun HomeContent(
         }
         // Popular Movies Grid
         // Use 'this' to explicitly reference the LazyListScope
-        this.MovieGrid(popularMovies)
+        this.MovieGrid(popularMovies, navController )
     }
 }
 
-fun LazyListScope.MovieGrid(movies: List<Movie>) {
+fun LazyListScope.MovieGrid(movies: List<Movie>,navController: NavController) {
     itemsIndexed(movies.chunked(2)) { _, moviePair ->
         Row(
             modifier = Modifier
@@ -113,8 +117,9 @@ fun LazyListScope.MovieGrid(movies: List<Movie>) {
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(0.6f)
-                        .padding(4.dp),
-                    elevation = CardDefaults.cardElevation(5.dp)
+                        .padding(4.dp)
+                        .clickable { navController.navigate("detail_screen/${movie.id}") },
+                    elevation = CardDefaults.cardElevation(5.dp),
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -166,7 +171,7 @@ fun LazyListScope.MovieGrid(movies: List<Movie>) {
 
 
 @Composable
-fun SingleImageCarousel(images: List<Movie>) {
+fun SingleImageCarousel(images: List<Movie>,navController: NavController) {
     val listState = rememberLazyListState()
     Box(
         modifier = Modifier
@@ -182,7 +187,8 @@ fun SingleImageCarousel(images: List<Movie>) {
                 Card(
                     modifier = Modifier
                         .width(280.dp)
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 8.dp)
+                        .clickable { navController.navigate("detail_screen/${movie.id}") },
                     elevation = CardDefaults.cardElevation(5.dp)
                 ) {
                     Box(

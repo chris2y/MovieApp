@@ -15,18 +15,30 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
-    private val _movieDetailState = MutableStateFlow<MovieDetailUiState>(MovieDetailUiState.Initial)
+    private val _movieDetailState = MutableStateFlow<MovieDetailUiState>(MovieDetailUiState.Loading)
     val movieDetailState: StateFlow<MovieDetailUiState> = _movieDetailState.asStateFlow()
 
-    fun fetchMovieDetails(movieId: Int) {
+   /* fun fetchMovieDetails(movieId: Int) {
+        viewModelScope.launch {
+            try {
+               val movieDetails = movieRepository.getMovieDetails(movieId)
+                _movieDetailState.value = MovieDetailUiState.Success(movieDetails)
+            } catch (e: Exception) {
+                _movieDetailState.value = MovieDetailUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }*/
+
+    fun fetchMovieDetailsWithExtras(movieId: Int) {
         viewModelScope.launch {
             _movieDetailState.value = MovieDetailUiState.Loading
             try {
-               // val movieDetails = movieRepository.getMovieDetails(movieId)
-                //_movieDetailState.value = MovieDetailUiState.Success(movieDetails)
+                val movieDetails = movieRepository.getMovieDetailsWithExtras(movieId)
+                _movieDetailState.value = MovieDetailUiState.Success(movieDetails)
             } catch (e: Exception) {
                 _movieDetailState.value = MovieDetailUiState.Error(e.message ?: "Unknown error")
             }
         }
     }
+
 }

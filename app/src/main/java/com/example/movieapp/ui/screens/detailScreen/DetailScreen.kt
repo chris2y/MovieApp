@@ -25,7 +25,7 @@ fun DetailScreen(
     // Fetch movie details based on movieId
     LaunchedEffect(movieId) {
         movieId?.let {
-            viewModel.fetchMovieDetails(it)
+            viewModel.fetchMovieDetailsWithExtras(it)
         }
     }
 
@@ -43,7 +43,7 @@ fun DetailScreen(
         is MovieDetailUiState.Success -> {
             // Display movie details
             Column {
-                Text(text = state.movie.title)
+                Text(text = state.movieFullDetails.cast.toString())
                 // Add more details as needed
             }
         }
