@@ -29,14 +29,27 @@ fun MovieApp() {
     val navController = rememberNavController()
     var selectedItem by remember { mutableIntStateOf(0) }
 
+    // Track the current route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Define routes where bottom navigation should be shown
+    val bottomNavRoutes = listOf(
+        Screens.Home.route,
+        Screens.Popular.route
+    )
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-                selectedIndex = selectedItem,
-                onItemSelected = { selectedItem = it }
-            )
+            // Only show bottom navigation for specific routes
+            if (currentRoute in bottomNavRoutes) {
+                BottomNavigationBar(
+                    navController = navController,
+                    selectedIndex = selectedItem,
+                    onItemSelected = { selectedItem = it }
+                )
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -60,7 +73,6 @@ fun MovieApp() {
                 val movieId = backStackEntry.arguments?.getInt("movieId")
                 DetailScreen(movieId, navController)
             }
-
         }
     }
 }

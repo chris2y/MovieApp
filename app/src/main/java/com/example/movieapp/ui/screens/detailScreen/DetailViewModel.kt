@@ -18,17 +18,23 @@ class DetailViewModel @Inject constructor(
     private val _movieDetailState = MutableStateFlow<MovieDetailUiState>(MovieDetailUiState.Loading)
     val movieDetailState: StateFlow<MovieDetailUiState> = _movieDetailState.asStateFlow()
 
+    // Cache to store fetched movie details
+    private var cachedMovieId: Int? = null
 
     fun fetchMovieDetailsWithExtras(movieId: Int) {
-        viewModelScope.launch {
-            _movieDetailState.value = MovieDetailUiState.Loading
-            try {
-                val movieDetails = movieRepository.getMovieDetailsWithExtras(movieId)
-                _movieDetailState.value = MovieDetailUiState.Success(movieDetails)
-            } catch (e: Exception) {
-                _movieDetailState.value = MovieDetailUiState.Error(e.message ?: "Unknown error")
+        // Only fetch if the movie details haven't been loaded before
+        if (cachedMovieId != movieId) {
+            viewModelScope.launch {
+                _movieDetailState.value = MovieDetailUiState.Loading
+                try {
+                    val movieDetails = movieRepository.getMovieDetailsWithExtras(movieId)
+                    _movieDetailState.value = MovieDetailUiState.Success(movieDetails)
+                    // Cache the movie ID to prevent re-fetching
+                    cachedMovieId = movieId
+                } catch (e: Exception) {
+                    _movieDetailState.value = MovieDetailUiState.Error(e.message ?: "Unknown error")
+                }
             }
         }
     }
-
 }
