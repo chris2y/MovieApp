@@ -15,6 +15,10 @@ import com.example.movieapp.ui.state.MovieDetailUiState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.movieapp.ui.components.MovieDetailContent
+
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun DetailScreen(
@@ -41,15 +45,26 @@ fun DetailScreen(
             }
         }
         is MovieDetailUiState.Success -> {
-            // Display movie details
-            Column {
-                Text(text = state.movieFullDetails.cast.toString())
-                // Add more details as needed
+            val movieDetails = state.movieFullDetails
+
+            // Make the content scrollable
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                MovieDetailContent(movieDetails = movieDetails)
             }
         }
         is MovieDetailUiState.Error -> {
-            Text(text = "Error: ${state.message}")
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Error: ${state.message}")
+            }
         }
         else -> {}
     }
 }
+

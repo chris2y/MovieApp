@@ -102,6 +102,10 @@ dependencies {
 
     implementation ("androidx.compose.material3:material3:1.3.1")
 
+    //youtubeplayer
+    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")
+
+
 
 
     //implementation(libs.androidx.material)
