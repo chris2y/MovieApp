@@ -1,5 +1,6 @@
 package com.example.movieapp.ui.screens.detailScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,12 +32,16 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +51,9 @@ import com.example.movieapp.ui.components.CastSection
 import com.example.movieapp.ui.components.RatingBar
 import com.example.movieapp.ui.components.YouTubePlayerView
 import com.example.movieapp.utils.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreen(
@@ -55,6 +63,9 @@ fun DetailScreen(
 ) {
     val movieDetailState by viewModel.movieDetailState.collectAsStateWithLifecycle()
     var isFavorite by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
     // Fetch movie details based on movieId
     LaunchedEffect(movieId) {
         movieId?.let {
@@ -64,9 +75,6 @@ fun DetailScreen(
 
 
     }
-
-
-
 
     when (val state = movieDetailState) {
         is MovieDetailUiState.Loading -> {
@@ -139,7 +147,14 @@ fun DetailScreen(
                                 rating = movieDetails.details.voteAverage
                             )
                                 viewModel.toggleFavorite(favoriteMovie, isFavorite)
-                                isFavorite = !isFavorite },
+                                isFavorite = !isFavorite
+
+                                Toast.makeText(
+                                    context,
+                                    if (isFavorite) "Added to Favorites" else "Removed from Favorites",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                      },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(12.dp)
@@ -153,8 +168,6 @@ fun DetailScreen(
                             )
                         }
                     }
-
-
                     // Movie Details
                     Column(modifier = Modifier.padding(14.dp)) {
                         Text(
@@ -218,7 +231,7 @@ fun DetailScreen(
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        RatingBar(movieDetails.details.voteAverage, modifier = Modifier)
+                                        RatingBar(movieDetails.details.voteAverage / 2, modifier = Modifier)
                                         Spacer(modifier = Modifier.height(4.dp)) // Small spacing between the RatingBar and the text
                                         Text(
                                             text = "${"%.1f".format(movieDetails.details.voteAverage)}/10",
@@ -253,9 +266,7 @@ fun DetailScreen(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-
                     CastSection(cast = movieDetails.cast)
-
                     // Trailer Section
                     Text(
                         text = "Trailers",
@@ -265,6 +276,7 @@ fun DetailScreen(
                     )
                     YouTubePlayerView(trailers = movieDetails.trailers)
                 }
+
             }
         }
         is MovieDetailUiState.Error -> {
@@ -276,6 +288,7 @@ fun DetailScreen(
             }
         }
         else -> {}
+
     }
 }
 

@@ -17,16 +17,4 @@ class FavoritesViewModel @Inject constructor(
 ) : ViewModel() {
     val favorites: StateFlow<List<FavoriteMovie>> = repository.allFavorites
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-
-    fun toggleFavorite(movie: FavoriteMovie, isFavorite: Boolean) = viewModelScope.launch {
-        if (isFavorite) {
-            repository.removeFromFavorites(movie)
-        } else {
-            repository.addToFavorites(movie)
-        }
-    }
-
-    suspend fun checkIsFavorite(movieId: Int): Boolean {
-        return repository.checkIsFavorite(movieId)
-    }
 }

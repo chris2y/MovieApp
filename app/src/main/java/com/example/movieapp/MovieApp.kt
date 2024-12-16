@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.movieapp.ui.components.BottomNavigationBar
+import com.example.movieapp.ui.navigation.BottomNavigationItem
 import com.example.movieapp.ui.navigation.Screens
 import com.example.movieapp.ui.screens.detailScreen.DetailScreen
 import com.example.movieapp.ui.screens.favoriteScreen.FavoriteScreen
@@ -27,7 +29,6 @@ import com.example.movieapp.ui.screens.homeScreen.HomeScreen
 @Composable
 fun MovieApp() {
     val navController = rememberNavController()
-    var selectedItem by remember { mutableIntStateOf(0) }
 
     // Track the current route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -39,6 +40,13 @@ fun MovieApp() {
         Screens.Favorite.route
     )
 
+    // Dynamically determine the selected index based on the current route
+    val selectedItem = remember(currentRoute) {
+        BottomNavigationItem().bottomNavigationItems().indexOfFirst {
+            it.route == currentRoute
+        }.coerceIn(0, BottomNavigationItem().bottomNavigationItems().size - 1)
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -47,7 +55,20 @@ fun MovieApp() {
                 BottomNavigationBar(
                     navController = navController,
                     selectedIndex = selectedItem,
-                    onItemSelected = { selectedItem = it }
+                    onItemSelected = { index ->
+                        val selectedRoute = BottomNavigationItem().bottomNavigationItems()[index].route
+                        navController.navigate(selectedRoute) {
+                            // Pop up to the start destination of the graph to
+                            // avoid building up a large stack of destinations
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            // Avoid multiple copies of the same destination
+                            launchSingleTop = true
+                            // Restore state when re-selecting a previously selected item
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }
@@ -63,7 +84,7 @@ fun MovieApp() {
                 )
             }
             composable(Screens.Favorite.route) {
-                FavoriteScreen()
+                FavoriteScreen(navController = navController)
             }
 
             composable(
