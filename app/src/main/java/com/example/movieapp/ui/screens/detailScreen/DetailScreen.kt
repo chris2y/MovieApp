@@ -23,8 +23,18 @@ import androidx.compose.runtime.getValue
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +59,8 @@ fun DetailScreen(
     }
 
     val movieDetailState by viewModel.movieDetailState.collectAsStateWithLifecycle()
+    var isFavorite by remember { mutableStateOf(false) }
+
 
     when (val state = movieDetailState) {
         is MovieDetailUiState.Loading -> {
@@ -62,150 +74,52 @@ fun DetailScreen(
         is MovieDetailUiState.Success -> {
             val movieDetails = state.movieFullDetails
             // Make the content scrollable
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
+
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // Box with Backdrop Image
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        // Display Backdrop Image
-                        movieDetails.details.backdropPath?.let { backdropPath ->
-                            AsyncImage(
-                                model = Constants.IMAGE_BACK_DROP_URL + backdropPath,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(350.dp),
-                                contentScale = ContentScale.Crop
+                    // Top App Bar with Back and Favorite Icons
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                    ) {
+                        // Back Icon
+                        IconButton(
+                            onClick = { navController.navigateUp() },
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
-                        // Overlay Poster on Backdrop with Shadow
-                        movieDetails.details.posterPath?.let { posterPath ->
-                            AsyncImage(
-                                model = Constants.IMAGE_BASE_URL + posterPath,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .height(250.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .shadow(8.dp)  // Adding shadow here
+                        // Favorite Icon
+                        IconButton(
+                            onClick = {
+                                // Toggle favorite state
+                                isFavorite = !isFavorite
+                                // TODO: Implement actual favorite functionality
+                                // This could involve calling a ViewModel method to save/remove from favorites
+                            },
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Favorite",
+                                tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
 
-                    // Movie Details
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        Text(
-                            text = movieDetails.details.title,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 2.dp)
-                        )
-                        val genreText = movieDetails.details.genres.joinToString(", ") { it.name }
-                        Text(
-                            text = genreText,
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            // Titles for rating and release date
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Release Date",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                // Spacer to center-align the rating
-                                Box(
-                                    modifier = Modifier.weight(1f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "Rating",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.SemiBold,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-
-                            // Values for rating and release date
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = movieDetails.details.releaseDate,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Normal,
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                // Center-align the rating components
-                                Box(
-                                    modifier = Modifier.weight(1f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        RatingBar(movieDetails.details.voteAverage, modifier = Modifier)
-                                        Spacer(modifier = Modifier.height(4.dp)) // Small spacing between the RatingBar and the text
-                                        Text(
-                                            text = "${"%.1f".format(movieDetails.details.voteAverage)}/10",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.Normal,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        // Overview Section
-                        Text(
-                            text = "Overview",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
-                        )
-                        Text(
-                            text = movieDetails.details.overview,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-
-
-                    }
-                    // Cast Section
-                    Text(
-                        text = "Cast",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                    )
-
-                    CastSection(cast = movieDetails.cast)
-
-                    // Trailer Section
-                    Text(
-                        text = "Trailers",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                    )
-                    YouTubePlayerView(trailers = movieDetails.trailers)
                 }
             }
+
         }
         is MovieDetailUiState.Error -> {
             Box(
