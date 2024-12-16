@@ -20,8 +20,8 @@ import androidx.navigation.navArgument
 import com.example.movieapp.ui.components.BottomNavigationBar
 import com.example.movieapp.ui.navigation.Screens
 import com.example.movieapp.ui.screens.detailScreen.DetailScreen
+import com.example.movieapp.ui.screens.favoriteScreen.FavoriteScreen
 import com.example.movieapp.ui.screens.homeScreen.HomeScreen
-import com.example.movieapp.ui.screens.popularScreen.PopularScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +36,7 @@ fun MovieApp() {
     // Define routes where bottom navigation should be shown
     val bottomNavRoutes = listOf(
         Screens.Home.route,
-        Screens.Popular.route
+        Screens.Favorite.route
     )
 
     Scaffold(
@@ -62,8 +62,8 @@ fun MovieApp() {
                     navController = navController
                 )
             }
-            composable(Screens.Popular.route) {
-                PopularScreen()
+            composable(Screens.Favorite.route) {
+                FavoriteScreen()
             }
 
             composable(

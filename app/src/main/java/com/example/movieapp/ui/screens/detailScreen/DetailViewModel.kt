@@ -2,6 +2,8 @@ package com.example.movieapp.ui.screens.detailScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapp.data.local.FavoriteMovie
+import com.example.movieapp.data.repository.FavoriteRepository
 import com.example.movieapp.data.repository.MovieRepository
 import com.example.movieapp.ui.state.MovieDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
     private val _movieDetailState = MutableStateFlow<MovieDetailUiState>(MovieDetailUiState.Loading)
     val movieDetailState: StateFlow<MovieDetailUiState> = _movieDetailState.asStateFlow()
@@ -35,6 +38,18 @@ class DetailViewModel @Inject constructor(
                     _movieDetailState.value = MovieDetailUiState.Error(e.message ?: "Unknown error")
                 }
             }
+        }
+    }
+
+    suspend fun checkIsFavorite(id: Int?): Boolean{
+        return favoriteRepository.checkIsFavorite(id)
+    }
+
+    fun toggleFavorite(movie: FavoriteMovie, isFavorite: Boolean) = viewModelScope.launch {
+        if (isFavorite) {
+            favoriteRepository.removeFromFavorites(movie)
+        } else {
+            favoriteRepository.addToFavorites(movie)
         }
     }
 }
