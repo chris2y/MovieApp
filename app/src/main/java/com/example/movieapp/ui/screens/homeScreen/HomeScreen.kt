@@ -5,12 +5,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -33,6 +38,8 @@ import com.example.movieapp.utils.Constants
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavController) {
     val homeScreenState by viewModel.homeScreenState.collectAsStateWithLifecycle()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
+
 
     when (val state = homeScreenState) {
         is MovieUiState.Loading -> {
@@ -47,7 +54,10 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
             HomeContent(
                 trendingMovies = state.trending,
                 popularMovies = state.popular,
-                navController = navController
+                navController = navController,
+                isLoadingMore = isLoadingMore,
+                onLoadMore = { viewModel.loadMoreMovies() }
+
             )
         }
         is MovieUiState.Error -> {
@@ -68,7 +78,9 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
 fun HomeContent(
     trendingMovies: List<Movie>,
     popularMovies: List<Movie>,
-    navController: NavController
+    navController: NavController,
+    isLoadingMore: Boolean,
+    onLoadMore: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -101,6 +113,23 @@ fun HomeContent(
         // Popular Movies Grid
         // Use 'this' to explicitly reference the LazyListScope
         this.MovieGrid(popularMovies, navController )
+
+        if (isLoadingMore) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+
+    }
+    listState.OnBottomReached {
+        onLoadMore()
     }
 }
 
@@ -246,3 +275,20 @@ fun SingleImageCarousel(images: List<Movie>,navController: NavController) {
         }
     }
 }
+
+@Composable
+fun LazyListState.OnBottomReached(loadMore: () -> Unit) {
+    val layoutInfo = remember { derivedStateOf { this.layoutInfo } }
+    val shouldLoadMore = remember { derivedStateOf {
+        val lastVisibleItemIndex = layoutInfo.value.visibleItemsInfo.lastOrNull()?.index ?: -1
+        val totalItemsCount = layoutInfo.value.totalItemsCount
+
+        lastVisibleItemIndex >= totalItemsCount - 1
+    }}
+
+    LaunchedEffect(shouldLoadMore) {
+        snapshotFlow { shouldLoadMore.value }
+            .collect { if (it) loadMore() }
+    }
+}
+
