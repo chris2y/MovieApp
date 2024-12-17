@@ -51,5 +51,5 @@ Movie App is an Android application built with **Kotlin** and **Jetpack Compose*
 
 ## 🎥 Demo Video
 
-[![Watch the video](https://img.youtube.com/vi/your_video_id/maxresdefault.jpg)](https://www.youtube.com/watch?v=your_video_id)
+[![Watch the video](https://img.youtube.com/vi/your_video_id/maxresdefault.jpg)](https://youtube.com/shorts/kWVxc1xvVQ0?feature=share)
 
