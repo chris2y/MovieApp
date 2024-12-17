@@ -53,13 +53,13 @@ Movie App is an Android application built with **Kotlin** and **Jetpack Compose*
 [![Watch the video](https://img.youtube.com/vi/your_video_id/maxresdefault.jpg)](https://youtube.com/shorts/kWVxc1xvVQ0?feature=share)
 ## ScreenShots
 
-<img src="https://github.com/user-attachments/assets/ab847f9f-80ed-4255-ad60-dccff9c425c5" alt="7" width="400"/>
-<img src="https://github.com/user-attachments/assets/e135af03-ad94-4c8a-b00c-95f6a23e0f5c" alt="6" width="400"/>
-<img src="https://github.com/user-attachments/assets/e3a94508-404e-4777-a76c-2cdb1d844541" alt="5" width="400"/>
-<img src="https://github.com/user-attachments/assets/4e9cad19-c0be-404b-8af6-58457eb59f3f" alt="4" width="400"/>
-<img src="https://github.com/user-attachments/assets/7e51e63a-2efa-490a-8b9e-30fedd1093a0" alt="3" width="400"/>
-<img src="https://github.com/user-attachments/assets/cbc423df-f747-4c52-9e74-535c7cc1767c" alt="2" width="400"/>
-<img src="https://github.com/user-attachments/assets/f3521d7a-9e42-4af6-be11-2066882a8ebd" alt="1" width="400"/>
+<img src="https://github.com/user-attachments/assets/ab847f9f-80ed-4255-ad60-dccff9c425c5" alt="7" width="300"/>
+<img src="https://github.com/user-attachments/assets/e135af03-ad94-4c8a-b00c-95f6a23e0f5c" alt="6" width="300"/>
+<img src="https://github.com/user-attachments/assets/e3a94508-404e-4777-a76c-2cdb1d844541" alt="5" width="300"/>
+<img src="https://github.com/user-attachments/assets/4e9cad19-c0be-404b-8af6-58457eb59f3f" alt="4" width="300"/>
+<img src="https://github.com/user-attachments/assets/7e51e63a-2efa-490a-8b9e-30fedd1093a0" alt="3" width="300"/>
+<img src="https://github.com/user-attachments/assets/cbc423df-f747-4c52-9e74-535c7cc1767c" alt="2" width="300"/>
+
 
 
 
