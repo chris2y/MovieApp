@@ -34,6 +34,8 @@ android {
             )
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -99,6 +101,16 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+    implementation ("androidx.compose.material3:material3:1.3.1")
+
+    //youtubeplayer
+    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")
+
+    //splashScreen
+    implementation ("androidx.core:core-splashscreen:1.0.0-alpha02")
+
+
 
 
 

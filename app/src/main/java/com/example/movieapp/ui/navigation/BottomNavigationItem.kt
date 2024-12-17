@@ -1,10 +1,10 @@
 package com.example.movieapp.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.movieapp.ui.theme.navigation.Screens
 
 data class BottomNavigationItem(
     val label : String = "",
@@ -20,9 +20,9 @@ data class BottomNavigationItem(
                 route = Screens.Home.route
             ),
             BottomNavigationItem(
-                label = "Popular",
-                icon = Icons.Filled.Movie,
-                route = Screens.Popular.route
+                label = "Favorites",
+                icon = Icons.Filled.Favorite,
+                route = Screens.Favorite.route
             ),
         )
     }

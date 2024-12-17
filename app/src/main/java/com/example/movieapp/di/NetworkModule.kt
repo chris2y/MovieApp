@@ -47,4 +47,6 @@ object NetworkModule {
     fun provideMovieApiService(retrofit: Retrofit): MovieApiService {
         return retrofit.create(MovieApiService::class.java)
     }
+
+
 }
